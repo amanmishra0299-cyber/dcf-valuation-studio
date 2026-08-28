@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DCF &amp; Relative Valuation Studio — screener.in</title>
+<style>
+:root{
+  --bg:#0b0f17; --panel:#121926; --panel2:#0f1522; --line:#212c3d; --line2:#2c3a4f;
+  --txt:#e6edf7; --mut:#8b9bb4; --dim:#61718a;
+  --acc:#39d98a; --acc2:#4aa8ff; --warn:#ffb454; --bad:#ff5c7a; --gold:#ffd166;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px 80px}
+a{color:var(--acc2)}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em}
+.mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+/* ---------- header ---------- */
+header{position:sticky;top:0;z-index:20;background:rgba(11,15,23,.92);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hdr{max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;gap:16px;
+  align-items:center;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#39d98a,#4aa8ff);
+  display:grid;place-items:center;font-weight:700;color:#08111c;font-size:13px}
+.brand b{font-size:15px}
+.brand span{color:var(--dim);font-size:12px;display:block;margin-top:-2px}
+.search{display:flex;gap:8px;flex:1;min-width:320px}
+.search input{flex:1;background:var(--panel);border:1px solid var(--line2);color:var(--txt);
+  padding:10px 14px;border-radius:9px;font-size:14px;text-transform:uppercase;outline:none}
+.search input:focus{border-color:var(--acc2)}
+button{font:inherit;cursor:pointer;border:none;border-radius:9px;padding:10px 16px;
+  background:var(--panel);color:var(--txt);border:1px solid var(--line2);transition:.15s}
+button:hover{border-color:var(--acc2);color:#fff}
+button.pri{background:linear-gradient(135deg,#22c37a,#39d98a);color:#04140c;border:none;font-weight:600}
+button.pri:hover{filter:brightness(1.08)}
+button.sm{padding:6px 11px;font-size:12.5px}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- hero ---------- */
+.hero{display:grid;grid-template-columns:1.15fr .95fr;gap:18px;margin:22px 0}
+@media(max-width:940px){.hero{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.verdict{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.vlabel{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.vbig{font-size:44px;font-weight:650;line-height:1;letter-spacing:-.03em}
+.vsub{color:var(--mut);font-size:13px;margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;
+  font-size:12.5px;font-weight:600;border:1px solid transparent}
+.pill.up{background:rgba(57,217,138,.13);color:var(--acc);border-color:rgba(57,217,138,.3)}
+.pill.dn{background:rgba(255,92,122,.13);color:var(--bad);border-color:rgba(255,92,122,.3)}
+.pill.nu{background:rgba(139,155,180,.13);color:var(--mut);border-color:rgba(139,155,180,.25)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border-radius:12px;overflow:hidden;margin-top:16px}
+.kpi{background:var(--panel2);padding:12px 14px}
+.kpi .k{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.07em}
+.kpi .v{font-size:19px;font-weight:600;margin-top:3px}
+.kpi .n{color:var(--dim);font-size:11px;margin-top:2px}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:26px 0 0;overflow-x:auto}
+.tab{padding:11px 16px;background:none;border:none;border-bottom:2px solid transparent;
+  color:var(--mut);border-radius:0;font-size:13.5px;white-space:nowrap}
+.tab:hover{color:var(--txt);border-color:var(--line2)}
+.tab.on{color:var(--txt);border-bottom-color:var(--acc)}
+.pane{display:none;padding-top:20px}
+.pane.on{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:940px){.grid2,.grid3{grid-template-columns:1fr}}
+h2.sec{font-size:16px;margin-bottom:4px}
+p.note{color:var(--mut);font-size:12.5px;margin:4px 0 14px}
+
+/* ---------- forms ---------- */
+.frow{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}
+.frow:last-child{border-bottom:none}
+.frow label{flex:1;color:var(--mut);font-size:13px}
+.frow label em{display:block;color:var(--dim);font-size:11px;font-style:normal;margin-top:1px}
+.frow input,.frow select{width:118px;background:var(--panel2);border:1px solid var(--line2);
+  color:var(--txt);padding:7px 10px;border-radius:8px;font-size:13.5px;text-align:right;
+  font-variant-numeric:tabular-nums;outline:none}
+.frow input:focus,.frow select:focus{border-color:var(--acc2)}
+.frow input.auto{border-style:dashed;color:var(--dim)}
+.badge{font-size:10.5px;padding:2px 6px;border-radius:5px;background:rgba(74,168,255,.12);
+  color:var(--acc2);border:1px solid rgba(74,168,255,.25);text-transform:uppercase;letter-spacing:.05em}
+.badge.auto{background:rgba(139,155,180,.1);color:var(--dim);border-color:rgba(139,155,180,.22)}
+.fset{border:1px solid var(--line);border-radius:12px;padding:6px 16px 12px;margin-bottom:16px;background:var(--panel)}
+.fset>h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);
+  margin:12px 0 2px}
+
+/* ---------- tables ---------- */
+table.t{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+table.t th{color:var(--dim);font-weight:500;text-align:right;padding:8px 9px;
+  border-bottom:1px solid var(--line2);white-space:nowrap;font-size:11px;
+  text-transform:uppercase;letter-spacing:.05em}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t td{padding:7px 9px;text-align:right;border-bottom:1px solid var(--line)}
+table.t tr:hover td{background:rgba(74,168,255,.05)}
+table.t tr.tot td{font-weight:600;border-top:1px solid var(--line2);background:rgba(74,168,255,.04)}
+table.t td.pos{color:var(--acc)} table.t td.neg{color:var(--bad)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+.scroll table.t td:first-child,.scroll table.t th:first-child{position:sticky;left:0;
+  background:var(--panel);min-width:150px}
+
+/* heatmap */
+.heat{border-collapse:collapse;font-size:12px;width:100%;font-variant-numeric:tabular-nums}
+.heat th{color:var(--dim);font-weight:500;padding:7px 8px;font-size:11px;text-align:center}
+.heat td{padding:9px 8px;text-align:center;border:1px solid var(--bg);font-weight:600}
+.heat .rowh{color:var(--mut);font-weight:500;text-align:right;white-space:nowrap}
+
+/* charts */
+.chart{width:100%;height:auto;display:block}
+.lgd{display:flex;gap:16px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin-top:10px}
+.lgd i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+
+/* misc */
+.warn{background:rgba(255,180,84,.08);border:1px solid rgba(255,180,84,.25);
+  border-radius:10px;padding:10px 14px;color:var(--warn);font-size:13px;margin:10px 0}
+.ok{background:rgba(57,217,138,.08);border-color:rgba(57,217,138,.25);color:var(--acc)}
+.hint{color:var(--dim);font-size:12px;margin-top:8px}
+.loader{display:flex;align-items:center;gap:12px;color:var(--mut);padding:40px 0}
+.spin{width:18px;height:18px;border:2px solid var(--line2);border-top-color:var(--acc);
+  border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.3);color:var(--bad);
+  border-radius:10px;padding:14px 16px;margin:20px 0}
+.drop{border:1.5px dashed var(--line2);border-radius:12px;padding:26px;text-align:center;
+  color:var(--mut);cursor:pointer;transition:.15s}
+.drop:hover,.drop.hot{border-color:var(--acc2);background:rgba(74,168,255,.05)}
+.tag{display:inline-block;padding:3px 9px;border-radius:6px;background:var(--panel2);
+  border:1px solid var(--line2);color:var(--mut);font-size:12px;margin:3px 4px 3px 0}
+footer{color:var(--dim);font-size:12px;border-top:1px solid var(--line);margin-top:40px;padding-top:18px}
+.split{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header>
+  <div class="hdr">
+    <div class="brand">
+      <div class="logo">DC</div>
+      <div><b>DCF &amp; Relative Valuation Studio</b><span>Indian equities · data from screener.in</span></div>
+    </div>
+    <div class="search">
+      <input id="ticker" placeholder="TICKER  e.g. RELIANCE, TCS, HDFCBANK, ASIANPAINT" spellcheck="false">
+      <button class="pri" id="go" onclick="analyze()">Analyse</button>
+    </div>
+    <button class="sm" onclick="showTab('import')">Import Excel</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="stage">
+    <div class="card" style="margin-top:22px">
+      <h2 class="sec">How this works</h2>
+      <p class="note" style="max-width:70ch">
+        Type an NSE/BSE symbol. The app pulls twelve years of profit &amp; loss, balance sheet,
+        cash flow and ratio history straight from <b>screener.in</b>, estimates the stock's
+        <b>beta against the Nifty</b> from five years of weekly prices, then builds an unlevered
+        free-cash-flow DCF, a two-stage dividend model, and a trading-comparables cross-check.
+        Every assumption below is editable — clear a field to return it to auto.
+      </p>
+      <div class="split">
+        <span style="color:var(--dim);font-size:12px">Try:</span>
+        <button class="sm" onclick="quick('RELIANCE')">RELIANCE</button>
+        <button class="sm" onclick="quick('TCS')">TCS</button>
+        <button class="sm" onclick="quick('ASIANPAINT')">ASIANPAINT</button>
+        <button class="sm" onclick="quick('HDFCBANK')">HDFCBANK</button>
+        <button class="sm" onclick="quick('TITAN')">TITAN</button>
+        <button class="sm" onclick="quick('SUNPHARMA')">SUNPHARMA</button>
+        <button class="sm" onclick="quick('LT')">L&amp;T</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RESULTS TEMPLATE (hidden until loaded) ============ -->
+<template id="tpl">
+  <div class="hero">
+    <div class="card">
+      <div class="split" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <h1 id="cname" style="font-size:22px"></h1>
+          <div class="vsub" id="cmeta"></div>
+        </div>
+        <a id="clink" target="_blank" rel="noopener" class="badge">screener.in ↗</a>
+      </div>
+      <div class="verdict" style="margin-top:20px">
+        <div>
+          <div class="vlabel">Intrinsic value per share</div>
+          <div class="vbig mono" id="vps">—</div>
+          <div class="vsub" id="vpsSub"></div>
+        </div>
+        <div id="vPill"></div>
+        <div style="margin-left:auto;text-align:right">
+          <div class="vlabel">Market price</div>
+          <div class="mono" style="font-size:26px;font-weight:600" id="cprice">—</div>
+          <div class="vsub" id="cmcap"></div>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </div>
+    <div class="card">
+      <h2 class="sec">Valuation football field</h2>
+      <p class="note">Range each method supports. Marker = market price.</p>
+      <div id="ff"></div>
+    </div>
+  </div>
+
+  <div id="warnBox"></div>
+
+  <div class="tabs">
+    <button class="tab on" data-t="dcf" onclick="showTab('dcf')">DCF model</button>
+    <button class="tab" data-t="assume" onclick="showTab('assume')">Assumptions</button>
+    <button class="tab" data-t="sens" onclick="showTab('sens')">Sensitivity &amp; scenarios</button>
+    <button class="tab" data-t="ddm" onclick="showTab('ddm')">Dividend model</button>
+    <button class="tab" data-t="comps" onclick="showTab('comps')">Comparables</button>
+    <button class="tab" data-t="stmt" onclick="showTab('stmt')">Statements</button>
+    <button class="tab" data-t="src" onclick="showTab('src')">Data &amp; sources</button>
+    <button class="tab" data-t="import" onclick="showTab('import')">Import Excel</button>
+  </div>
+
+  <!-- DCF -->
+  <div class="pane on" id="p-dcf">
+    <div class="grid2">
+      <div class="card">
+        <h2 class="sec">Discount rate build-up</h2>
+        <p class="note">CAPM cost of equity, blended with after-tax cost of debt at the
+          <span id="capnote"></span> capital structure.</p>
+        <div id="waccBox"></div>
+      </div>
+      <div class="card">
+        <h2 class="sec">Enterprise to equity bridge</h2>
+        <p class="note">All figures in ₹ crore.</p>
+        <div id="bridge"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px;display:none" id="rimCard">
+      <h2 class="sec">Residual income model <span class="badge">use this for banks</span></h2>
+      <p class="note">A lender's borrowings are deposits, not capital structure, so unlevered
+        free cash flow is not defined for them. Equity value = book value + present value of
+        returns earned above the cost of equity.</p>
+      <div class="grid2"><div id="rimSum"></div><div class="scroll"><table class="t" id="rimT"></table></div></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2 class="sec">Unlevered free cash flow forecast</h2>
+      <p class="note">Growth fades <span id="fadeN"></span>pp a year toward terminal growth; margin converges to
+        target. UFCF = EBIT×(1−t) + D&amp;A − capex − ΔNWC.</p>
+      <div class="scroll"><table class="t" id="proj"></table></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2 class="sec">Revenue and free cash flow</h2>
+      <div id="projChart"></div>
+    </div>
+  </div>
+
+  <!-- Assumptions -->
+  <div class="pane" id="p-assume">
+    <div class="grid2">
+      <div>
+        <div class="fset">
+          <h3>Discount rate</h3>
+          <div id="f-wacc"></div>
+        </div>
+        <div class="fset">
+          <h3>Growth &amp; margins</h3>
+          <div id="f-growth"></div>
+        </div>
+      </div>
+      <div>
+        <div class="fset">
+          <h3>Reinvestment</h3>
+          <div id="f-capex"></div>
+        </div>
+        <div class="fset">
+          <h3>Terminal value</h3>
+          <div id="f-term"></div>
+        </div>
+        <div class="fset">
+          <h3>Dividend model &amp; comps</h3>
+          <div id="f-ddm"></div>
+        </div>
+      </div>
+    </div>
+    <div class="split" style="margin-top:6px">
+      <button class="pri" onclick="recalc()">Recalculate</button>
+      <button class="sm" onclick="resetAll()">Reset to auto</button>
+      <span class="hint">Changing an assumption only re-runs the model — data is not re-fetched.</span>
+    </div>
+  </div>
+
+  <!-- Sensitivity -->
+  <div class="pane" id="p-sens">
+    <div class="grid2">
+      <div class="card">
+        <h2 class="sec">WACC × terminal growth</h2>
+        <p class="note">Value per share. Shading is distance from the base case.</p>
+        <div class="scroll"><table class="heat" id="heat"></table></div>
+      </div>
+      <div class="card">
+        <h2 class="sec">Scenarios</h2>
+        <p class="note">Bear and bull shift growth ±3pp, margin ±2pp and WACC ±1.5pp/−1pp.</p>
+        <div id="scenBox"></div>
+        <h2 class="sec" style="margin-top:22px">What the market is paying for</h2>
+        <p class="note">Stage-1 revenue growth that makes today's price fair, holding terminal growth fixed.</p>
+        <div id="impliedBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DDM -->
+  <div class="pane" id="p-ddm">
+    <div class="card">
+      <h2 class="sec">Two-stage dividend discount model</h2>
+      <p class="note">Cross-check, not a substitute: for low-payout companies the DDM mechanically
+        produces a low value because most earnings are retained rather than distributed.</p>
+      <div id="ddmBox"></div>
+    </div>
+  </div>
+
+  <!-- Comps -->
+  <div class="pane" id="p-comps">
+    <div class="card">
+      <h2 class="sec">Comparable set</h2>
+      <p class="note">Source: <b id="peerSrc"></b></p>
+      <div class="split" style="margin-bottom:14px">
+        <input id="peersIn" placeholder="Your own tickers, comma separated — e.g. ONGC, IOC, GAIL"
+          style="flex:1;min-width:260px;background:var(--panel2);border:1px solid var(--line2);
+          color:var(--txt);padding:9px 12px;border-radius:9px;text-transform:uppercase;outline:none">
+        <button class="sm" onclick="loadPeers('user')">Use these</button>
+        <button class="sm" onclick="loadPeers('curated')">Curated sector</button>
+        <button class="sm" onclick="loadPeers('screener')">Screener's own list</button>
+      </div>
+      <div class="scroll"><table class="t" id="peersT"></table></div>
+    </div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="card">
+        <h2 class="sec">Implied value from peer multiples</h2>
+        <p class="note">Peer median applied to this company's own metrics, ±<span id="bandN"></span>%.</p>
+        <div id="relImp"></div>
+      </div>
+      <div class="card">
+        <h2 class="sec">Where this company trades</h2>
+        <p class="note">Company vs peer median.</p>
+        <div id="relOur"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statements -->
+  <div class="pane" id="p-stmt">
+    <div class="split" style="margin-bottom:12px">
+      <button class="sm" onclick="exportXlsx()">⬇ Download as Excel (screener-style)</button>
+      <span class="hint">Rebuilt from the parsed screener.in data — their own export endpoint is login-gated.</span>
+    </div>
+    <div id="stmts"></div>
+  </div>
+
+  <!-- Sources -->
+  <div class="pane" id="p-src">
+    <div class="card">
+      <h2 class="sec">Where every input came from</h2>
+      <p class="note">Nothing here is estimated silently. If a field could not be sourced it is
+        flagged and falls back to an editable default.</p>
+      <div class="scroll"><table class="t" id="provT"></table></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2 class="sec">Method notes</h2>
+      <div class="note" style="color:var(--mut);font-size:13px;line-height:1.7">
+        <b>Unlevered FCF DCF.</b> EBIT is taxed at the reported effective rate, D&amp;A added back,
+        capex and the change in net working capital subtracted. The result is discounted at WACC.
+        Terminal value defaults to Gordon growth on a normalised perpetuity year in which capex
+        equals D&amp;A; an EV/EBITDA exit multiple is available in Assumptions.<br>
+        <b>WACC.</b> Cost of equity = risk-free + β × (ERP + country risk premium). Cost of debt
+        defaults to reported interest ÷ borrowings. Weights default to the actual debt-to-capital
+        ratio; a target structure can be set instead.<br>
+        <b>Beta.</b> Estimated by OLS on five years of weekly returns against the Nifty. Yahoo's
+        own beta field is used only if price history is unavailable — set it manually for
+        unlisted or newly listed companies.<br>
+        <b>Working capital.</b> NWC is set at cash-conversion-cycle ÷ 365 of revenue, so it grows
+        with sales. Floored at −5% so a negative cycle cannot manufacture free cash flow.<br>
+        <b>Data.</b> screener.in publishes twelve years of annual statements in page HTML; we parse
+        those directly. Figures are ₹ crore. Balance-sheet items are the last reported fiscal year;
+        P&amp;L items use TTM where screener provides it.
+      </div>
+    </div>
+  </div>
+
+  <!-- Import -->
+  <div class="pane" id="p-import">
+    <div class="grid2">
+      <div class="card">
+        <h2 class="sec">Import a screener.in Excel export</h2>
+        <p class="note">screener.in's export button is login-gated, so if you want its file: sign in,
+          open a company, press <b>Export</b>, then drop the file here. We parse the P&amp;L,
+          balance sheet and cash-flow blocks and run the same model on them.</p>
+        <div class="drop" id="drop" onclick="document.getElementById('file').click()">
+          Drop the .xls / .xlsx here, or click to browse
+        </div>
+        <input type="file" id="file" accept=".xls,.xlsx,.csv,.txt" style="display:none">
+        <div class="hint">Or paste tab-separated text below.</div>
+        <textarea id="paste" rows="7" style="width:100%;margin-top:8px;background:var(--panel2);
+          border:1px solid var(--line2);color:var(--txt);border-radius:9px;padding:10px;
+          font:12px ui-monospace,Menlo,Consolas,monospace;outline:none"
+          placeholder="Sales&#9;Mar 2020&#9;Mar 2021&#9;..."></textarea>
+        <button class="sm" style="margin-top:8px" onclick="importPaste()">Parse pasted text</button>
+      </div>
+      <div class="card">
+        <h2 class="sec">Manual entry</h2>
+        <p class="note">No fetching at all — type the numbers and model them.</p>
+        <div id="f-manual"></div>
+        <button class="pri" style="margin-top:12px" onclick="manualRun()">Run on manual inputs</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const R=(v,d=0)=>v==null||isNaN(v)?'—':Number(v).toLocaleString('en-IN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const PC=(v,d=1)=>v==null||isNaN(v)?'—':(v>0?'+':'')+Number(v).toFixed(d)+'%';
+const CR=(v)=>v==null||isNaN(v)?'—':'₹'+R(v/1e5,2)+' L Cr';
+const CLR=v=>v==null?'':(v>0?'pos':(v<0?'neg':''));
+let BASE=null, LAST=null;
+
+const FIELDS={
+ wacc:[
+  ['risk_free_pct','Risk-free rate','%','India 10Y gsec. Editable.'],
+  ['erp_pct','Equity risk premium','%','Mature-market premium.'],
+  ['crp_pct','Country risk premium','%','Extra charge for India, if any.'],
+  ['beta','Beta','x','Auto = 5y weekly OLS vs Nifty.'],
+  ['target_debt_pct','Target debt weight','%','Blank = actual D/(D+E).'],
+  ['cost_of_debt_pct','Cost of debt','%','Blank = interest ÷ borrowings.'],
+  ['tax_rate_pct','Tax rate','%','Blank = reported effective tax.'],
+ ],
+ growth:[
+  ['years','Forecast years','yrs','3–20.'],
+  ['revenue_growth_pct','Year-1 revenue growth','%','Blank = blend of 3y and 5y CAGR.'],
+  ['growth_fade_pct','Growth fade','pp/yr','Growth drops this much each year.'],
+  ['ebit_margin_pct','EBITDA margin','%','Blank = latest reported.'],
+  ['target_margin_pct','Target margin','%','Blank = hold flat.'],
+  ['margin_fade_years','Margin fade','yrs','Years to reach target margin.'],
+ ],
+ capex:[
+  ['capex_pct_revenue','Capex','% of revenue','Blank = 3y avg investing outflow.'],
+  ['dep_pct_revenue','Depreciation','% of revenue','Blank = reported D&A.'],
+  ['nwc_pct_revenue','Working capital','% of revenue','Blank = CCC ÷ 365.'],
+ ],
+ term:[
+  ['terminal_growth_pct','Terminal growth','%','Long-run nominal GDP-ish.'],
+  ['terminal_method','Terminal method','','gordon or exit_multiple.'],
+  ['exit_ev_ebitda','Exit EV/EBITDA','x','Only with exit_multiple.'],
+  ['discount_convention','Discount timing','','end or mid year.'],
+ ],
+ ddm:[
+  ['payout_pct','Dividend payout','%','Blank = reported.'],
+  ['target_payout_pct','Target payout','%','Converged to by year 5.'],
+  ['ddm_growth_pct','Dividend growth','%','Blank = revenue growth.'],
+  ['peer_bands_pct','Comp band','±%','Low/high around peer median.'],
+ ],
+};
+
+function fieldHTML(key,label,unit,note){
+  const isSel = key==='terminal_method'||key==='discount_convention';
+  let ctrl;
+  if(isSel){
+    const opts = key==='terminal_method'
+      ? [['gordon','Gordon growth'],['exit_multiple','Exit multiple']]
+      : [['end','End of year'],['mid','Mid year']];
+    ctrl=`<select data-k="${key}">${opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>`;
+  }else{
+    ctrl=`<input data-k="${key}" type="number" step="any" placeholder="auto">`;
+  }
+  return `<div class="frow"><label>${label}<em>${note}</em></label>
+    <span class="badge auto" data-b="${key}">${unit||''}</span>${ctrl}</div>`;
+}
+function buildForms(){
+  for(const g in FIELDS){
+    const el=$('#f-'+g); if(!el) continue;
+    el.innerHTML=FIELDS[g].map(f=>fieldHTML(...f)).join('');
+  }
+  const m=$('#f-manual');
+  if(m) m.innerHTML=[
+    ['name','Company name',''],
+    ['revenue','Revenue (₹ Cr)','Latest / TTM'],
+    ['ebitda','EBITDA (₹ Cr)','Operating profit'],
+    ['depreciation','Depreciation (₹ Cr)',''],
+    ['net_profit','Net profit (₹ Cr)',''],
+    ['eps','EPS (₹)',''],
+    ['debt','Borrowings (₹ Cr)',''],
+    ['cash','Investments / cash (₹ Cr)',''],
+    ['net_worth','Net worth (₹ Cr)','Equity + reserves'],
+    ['shares','Shares outstanding (Cr)',''],
+    ['price','Share price (₹)',''],
+    ['beta','Beta','x'],
+  ].map(([k,l,u])=>`<div class="frow"><label>${l}<em>${u||'&nbsp;'}</em></label>
+     <input data-m="${k}" type="${k==='name'?'text':'number'}" step="any"></div>`).join('');
+}
+
+function fillForms(p){
+  $$('[data-k]').forEach(el=>{
+    const k=el.dataset.k, v=p?.[k];
+    const auto = v==null||v==='';
+    if(el.tagName==='SELECT'){ el.value=v||el.options[0].value; }
+    else{ el.value=auto?'':v; el.classList.toggle('auto',auto); }
+  });
+}
+function readForms(){
+  const o={};
+  $$('[data-k]').forEach(el=>{ o[el.dataset.k]= el.value===''?null:el.value; });
+  return o;
+}
+
+async function api(path,body){
+  const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json();
+  if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+  return j;
+}
+function loading(msg){
+  $('#stage').innerHTML=`<div class="loader"><div class="spin"></div>${msg}</div>`;
+}
+function fail(msg){ $('#stage').innerHTML=`<div class="err">${msg}</div>`; }
+function quick(t){ $('#ticker').value=t; analyze(); }
+
+async function analyze(){
+  const t=$('#ticker').value.trim();
+  if(!t) return;
+  loading(`Fetching ${t.toUpperCase()} from screener.in, computing beta vs Nifty…`);
+  try{
+    const j=await api('/api/analyze',{ticker:t});
+    BASE=j; render(j);
+  }catch(e){ fail(e.message); }
+}
+async function recalc(){
+  if(!BASE) return;
+  try{
+    const j=await api('/api/recalc',{...readForms(),base:BASE});
+    BASE={...BASE,inputs:BASE.inputs}; render(j); showTab('dcf');
+  }catch(e){ alert(e.message); }
+}
+function resetAll(){ fillForms(BASE?.params); }
+
+/* ------------------------------- rendering ------------------------------- */
+function render(j){
+  LAST=j;
+  if(!$('#tplRoot')){
+    const host=$('#stage'); host.innerHTML='';
+    host.appendChild($('#tpl').content.cloneNode(true));
+    host.firstChild.id='tplRoot';
+    buildForms();
+  }
+  const c=j.company, p=j.params, h=c.history, d=j.dcf||{};
+  $('#cname').textContent=c.name||c.ticker||'Imported company';
+  const sec=[c.sector?.['Broad Sector'],c.sector?.['Sector'],c.sector?.['Industry']].filter(Boolean).join(' › ');
+  $('#cmeta').innerHTML=[c.ticker,sec,h.latest_period?`latest: ${h.latest_period}`:null]
+    .filter(Boolean).join(' · ');
+  if(c.url){ $('#clink').href=c.url; $('#clink').style.display=''; } else $('#clink').style.display='none';
+
+  const rim=j.residual_income;
+  const prim = j.is_financial && rim && rim.value_per_share!=null ? rim : d;
+  const v=prim.value_per_share, up=prim.upside_pct, px=p.price;
+  $('#vps').textContent=v==null?'—':'₹'+R(v,1);
+  $('#vpsSub').innerHTML = (j.is_financial
+    ? `Residual income model · ROE ${R(rim?.roe_pct,1)}% vs cost of equity ${R(rim?.ke_pct,1)}% · implied P/B ${R(rim?.implied_pb,2)}x`
+    : `${p.years}-year unlevered FCF DCF · terminal growth ${R(p.terminal_growth_pct,1)}%`)
+    + (j.is_financial?' · <span style="color:var(--warn)">bank/NBFC: DCF shown but not meaningful</span>':'');
+  const cls=up==null?'nu':(up>0?'up':'dn');
+  const word=up==null?'—':(up>15?'Undervalued':(up<-15?'Overvalued':'Fairly valued'));
+  $('#vPill').innerHTML=`<span class="pill ${cls}">${up==null?'':PC(up,1)} ${word}</span>`;
+  $('#cprice').textContent=px==null?'—':'₹'+R(px,1);
+  $('#cmcap').textContent=p.market_cap==null?'':CR(p.market_cap)+' market cap';
+
+  $('#kpis').innerHTML=[
+    ['WACC',R(j.wacc.wacc_pct,2)+'%',`Ke ${R(j.wacc.cost_of_equity_pct,1)}% · Kd ${R(j.wacc.cost_of_debt_pct,1)}%`],
+    j.is_financial && rim
+      ? ['PV of excess returns',CR(rim.pv_residual+rim.pv_terminal),'residual income, capitalised']
+      : ['Enterprise value',CR(d.ev),`implied ${R(d.implied_ev_ebitda_t0,1)}x EV/EBITDA`],
+    ['Equity value',CR(d.equity_value),`implied P/E ${R(d.implied_pe_t0,1)}x`],
+    j.is_financial && rim
+      ? ['Book value',CR(rim.book_value),`ROE ${R(rim.roe_pct,1)}% · Ke ${R(rim.ke_pct,1)}%`]
+      : ['Terminal value',R(d.tv_share_of_ev_pct,0)+'% of EV',(d.tv_note||'').slice(0,38)+'…'],
+    ['Market implies',j.implied?.implied_growth_pct!=null?R(j.implied.implied_growth_pct,1)+'% growth':'—','stage-1 revenue CAGR at today\u2019s price'],
+    ['Peer median P/E',R(j.relative?.median?.pe,1)+'x',`vs ${R(j.relative?.our?.pe,1)}x here`],
+  ].map(([k,vv,n])=>`<div class="kpi"><div class="k">${k}</div><div class="v mono">${vv}</div><div class="n">${n}</div></div>`).join('');
+
+  $('#warnBox').innerHTML=(j.warnings||[]).map(w=>`<div class="warn">⚠ ${w}</div>`).join('');
+  football(j.football,px);
+  waccBox(j); bridge(d); proj(d); projChart(d); rimPanel(j);
+  if(j.dcf_error) $('#warnBox').insertAdjacentHTML('beforeend',
+    `<div class="warn">DCF could not be run: ${j.dcf_error}</div>`);
+  sens(j); scen(j); implied(j); ddm(j.ddm); comps(j); stmts(c); prov(j);
+  fillForms(p);
+  $('#fadeN').textContent=R(p.growth_fade_pct,1);
+  $('#bandN').textContent=R(p.peer_bands_pct,0);
+  $('#capnote').textContent=p.target_debt_pct==null?'actual':`target ${R(p.target_debt_pct,0)}% debt`;
+  showTab($('#tplRoot .tab.on')?.dataset.t||'dcf');
+}
+
+function showTab(t){
+  $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  $$('.pane').forEach(p=>p.classList.toggle('on',p.id==='p-'+t));
+  if(t==='import'&&$('#file')){ $('#file').onchange=e=>upload(e.target.files[0]); }
+}
+
+/* ---- charts (inline SVG, no external libs) ---- */
+function football(bars,px){
+  const el=$('#ff'); if(!el) return;
+  const vals=bars.flatMap(b=>[b.low,b.mid,b.high].filter(v=>v!=null));
+  if(!vals.length){ el.innerHTML='<div class="hint">No ranges available.</div>'; return; }
+  let lo=Math.min(...vals,px||Infinity), hi=Math.max(...vals,px||-Infinity);
+  const pad=(hi-lo)*0.08||1; lo-=pad; hi+=pad;
+  const W=560,rh=30,lw=150;
+  const H=bars.length*rh+40;
+  const X=v=>lw+(v-lo)/(hi-lo)*(W-lw-14);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">`;
+  s+=`<text x="0" y="14" fill="#61718a" font-size="11">₹ per share</text>`;
+  for(let i=0;i<=4;i++){
+    const v=lo+(hi-lo)*i/4, x=X(v);
+    s+=`<line x1="${x}" y1="22" x2="${x}" y2="${H-16}" stroke="#212c3d"/>
+        <text x="${x}" y="${H-4}" fill="#61718a" font-size="10" text-anchor="middle">${R(v,0)}</text>`;
+  }
+  const cols=['#39d98a','#4aa8ff','#ffb454','#a78bfa','#ff8fab','#ffd166'];
+  bars.forEach((b,i)=>{
+    const y=30+i*rh+rh/2, l=X(b.low),h2=X(b.high),m=X(b.mid);
+    s+=`<text x="0" y="${y+4}" fill="#8b9bb4" font-size="11">${b.method}</text>`;
+    s+=`<line x1="${l}" y1="${y}" x2="${h2}" y2="${y}" stroke="${cols[i%cols.length]}" stroke-width="9" stroke-linecap="round" opacity=".32"/>`;
+    s+=`<circle cx="${m}" cy="${y}" r="4.5" fill="${cols[i%cols.length]}"/>`;
+    s+=`<text x="${h2+8}" y="${y+4}" fill="#8b9bb4" font-size="10.5">${R(b.low,0)}–${R(b.high,0)}</text>`;
+  });
+  if(px!=null){
+    const x=X(px);
+    s+=`<line x1="${x}" y1="20" x2="${x}" y2="${H-16}" stroke="#ff5c7a" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="${x}" y="14" fill="#ff5c7a" font-size="10.5" text-anchor="middle">CMP ${R(px,0)}</text>`;
+  }
+  s+='</svg>';
+  el.innerHTML=s;
+}
+
+function projChart(d){
+  const el=$('#projChart'); if(!el) return;
+  const rows=d.rows||[];
+  if(!rows.length){ el.innerHTML='<div class="hint">No DCF projection available.</div>'; return; } W=900,H=250,pl=64,pb=34,pt=16,pr=16;
+  const maxR=Math.max(...rows.map(r=>r.revenue)), maxF=Math.max(...rows.map(r=>Math.abs(r.fcf)));
+  const X=i=>pl+i*(W-pl-pr)/Math.max(rows.length-1,1);
+  const Y=v=>H-pb-(v/maxR)*(H-pb-pt);
+  const Yf=v=>H-pb-(v/maxF)*(H-pb-pt);
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+  for(let i=0;i<=4;i++){
+    const y=pt+(H-pb-pt)*i/4, v=maxR*(1-i/4);
+    s+=`<line x1="${pl}" y1="${y}" x2="${W-pr}" y2="${y}" stroke="#212c3d"/>
+        <text x="${pl-8}" y="${y+4}" fill="#61718a" font-size="10" text-anchor="end">${R(v/1000,0)}k</text>`;
+  }
+  const bw=Math.max(6,(W-pl-pr)/rows.length*0.5);
+  rows.forEach((r,i)=>{
+    const x=X(i)-bw/2, y=Y(r.revenue);
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${H-pb-y}" fill="#4aa8ff" opacity=".28" rx="2"/>`;
+  });
+  s+=`<polyline fill="none" stroke="#4aa8ff" stroke-width="2" points="${rows.map((r,i)=>`${X(i)},${Y(r.revenue)}`).join(' ')}"/>`;
+  s+=`<polyline fill="none" stroke="#39d98a" stroke-width="2.5" points="${rows.map((r,i)=>`${X(i)},${Yf(r.fcf)}`).join(' ')}"/>`;
+  rows.forEach((r,i)=>{ if(i%2===0||i===rows.length-1)
+    s+=`<text x="${X(i)}" y="${H-pb+16}" fill="#61718a" font-size="10" text-anchor="middle">Y${r.year}</text>`;});
+  s+=`<text x="${pl-8}" y="${pt-4}" fill="#61718a" font-size="10" text-anchor="end">₹ Cr</text></svg>`;
+  el.innerHTML=s+`<div class="lgd"><span><i style="background:#4aa8ff;opacity:.6"></i>Revenue (bars/left)</span>
+    <span><i style="background:#39d98a"></i>Unlevered FCF (line, own scale)</span></div>`;
+}
+
+/* ---- tables ---- */
+function waccBox(j){
+  const w=j.wacc,p=j.params;
+  $('#waccBox').innerHTML=`<table class="t">
+   <tr><td>Risk-free rate</td><td class="mono">${R(p.risk_free_pct,2)}%</td></tr>
+   <tr><td>Beta</td><td class="mono">${R(p.beta,2)}×</td></tr>
+   <tr><td>Equity risk premium ${p.crp_pct?`(+ ${R(p.crp_pct,2)}% country)`:''}</td><td class="mono">${R(p.erp_pct+(p.crp_pct||0),2)}%</td></tr>
+   <tr class="tot"><td>Cost of equity</td><td class="mono">${R(w.cost_of_equity_pct,2)}%</td></tr>
+   <tr><td>Cost of debt (pre-tax)</td><td class="mono">${R(w.cost_of_debt_pct,2)}%</td></tr>
+   <tr><td>Tax rate</td><td class="mono">${R(w.tax_rate_pct,1)}%</td></tr>
+   <tr><td>Weights — equity / debt</td><td class="mono">${R(w.w_e*100,1)}% / ${R(w.w_d*100,1)}%</td></tr>
+   <tr class="tot"><td>WACC</td><td class="mono">${R(w.wacc_pct,2)}%</td></tr></table>`;
+}
+function bridge(d){
+  const row=(l,v,tot)=>`<tr class="${tot?'tot':''}"><td>${l}</td><td class="mono ${CLR(v)}">${v==null?'—':R(v,0)}</td></tr>`;
+  $('#bridge').innerHTML=`<table class="t">
+    ${row('PV of explicit FCF',d.pv_explicit)}
+    ${row('PV of terminal value',d.pv_terminal)}
+    ${row('Enterprise value',d.ev,1)}
+    ${row('less: net debt',-d.net_debt)}
+    ${row('less: minority interest',-d.minority)}
+    ${row('Equity value',d.equity_value,1)}
+    ${row('÷ shares outstanding (Cr)',null)}
+    ${row('Value per share (₹)',d.value_per_share,1)}</table>`;
+}
+function proj(d){
+  if(!d.rows) return;
+  const cols=['Yr','Growth','Margin','Revenue','EBITDA','D&A','EBIT','NOPAT','Capex','ΔNWC','UFCF','PV'];
+  $('#proj').innerHTML=`<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`+
+    d.rows.map(r=>`<tr><td>${r.year}</td><td>${R(r.growth_pct,1)}%</td><td>${R(r.margin_pct,1)}%</td>
+      <td>${R(r.revenue,0)}</td><td>${R(r.ebitda,0)}</td><td>${R(r.dep,0)}</td><td>${R(r.ebit,0)}</td>
+      <td>${R(r.nopat,0)}</td><td>${R(-r.capex,0)}</td><td>${R(-r.d_nwc,0)}</td>
+      <td class="${CLR(r.fcf)}">${R(r.fcf,0)}</td><td>${R(r.pv_fcf,0)}</td></tr>`).join('')+
+    `<tr class="tot"><td>Terminal</td><td colspan="9">${d.tv_note}</td>
+      <td>${R(d.terminal_value,0)}</td><td>${R(d.pv_terminal,0)}</td></tr>`;
+}
+function rimPanel(j){
+  const c=$('#rimCard'); if(!c) return;
+  const r=j.residual_income;
+  if(!j.is_financial||!r){ c.style.display='none'; return; }
+  c.style.display='';
+  if(r.error){ $('#rimSum').innerHTML=`<div class="warn">${r.error}</div>`; return; }
+  $('#rimSum').innerHTML=`<table class="t">
+    <tr><td>Book value (net worth)</td><td class="mono">${CR(r.book_value)}</td></tr>
+    <tr><td>Return on equity</td><td class="mono">${R(r.roe_pct,2)}%</td></tr>
+    <tr><td>Cost of equity</td><td class="mono">${R(r.ke_pct,2)}%</td></tr>
+    <tr><td>PV of residual income</td><td class="mono">${CR(r.pv_residual)}</td></tr>
+    <tr><td>PV of terminal residual income</td><td class="mono">${CR(r.pv_terminal)}</td></tr>
+    <tr class="tot"><td>Equity value</td><td class="mono">${CR(r.equity_value)}</td></tr>
+    <tr class="tot"><td>Value per share</td><td class="mono">₹${R(r.value_per_share,1)}</td></tr>
+    <tr><td>Implied P/B on this value</td><td class="mono">${R(r.implied_pb,2)}x</td></tr></table>`;
+  $('#rimT').innerHTML=`<tr><th>Yr</th><th>Book value</th><th>ROE</th><th>Equity charge</th>
+    <th>Net income</th><th>Residual</th><th>PV</th></tr>`+
+    r.rows.map(x=>`<tr><td>${x.year}</td><td>${R(x.book_value,0)}</td><td>${R(x.roe_pct,1)}%</td>
+      <td>${R(x.equity_charge,0)}</td><td>${R(x.net_income,0)}</td>
+      <td class="${CLR(x.residual_income)}">${R(x.residual_income,0)}</td><td>${R(x.pv,0)}</td></tr>`).join('');
+}
+function sens(j){
+  const s=j.sensitivity; if(!s) return;
+  const base=j.dcf.value_per_share;
+  const all=s.grid.flatMap(g=>g.values.filter(v=>v!=null));
+  const mn=Math.min(...all),mx=Math.max(...all);
+  const col=v=>{ if(v==null) return 'background:#121926;color:#61718a';
+    const t=(v-mn)/Math.max(mx-mn,1e-9);
+    const r=Math.round(255-t*198), g=Math.round(92+t*145), b=Math.round(122-t*34);
+    return `background:rgba(${r},${g},${b},.20);color:#e6edf7`; };
+  $('#heat').innerHTML=`<tr><th class="rowh">WACC \\ g</th>${s.growths.map(g=>`<th>${R(g,1)}%</th>`).join('')}</tr>`+
+   s.grid.map(r=>`<tr><td class="rowh">${R(r.wacc,1)}%</td>`+
+     r.values.map(v=>`<td style="${col(v)}">${v==null?'—':R(v,0)}</td>`).join('')+'</tr>').join('');
+}
+function scen(j){
+  $('#scenBox').innerHTML=`<table class="t"><tr><th>Case</th><th>Growth</th><th>Margin</th><th>WACC</th><th>Value</th><th>vs CMP</th></tr>`+
+   (j.scenarios||[]).map(s=>`<tr><td>${s.name}</td><td>${R(s.growth_pct,1)}%</td><td>${R(s.margin_pct,1)}%</td>
+     <td>${R(s.wacc_pct,1)}%</td><td class="mono">${s.value_per_share==null?'—':'₹'+R(s.value_per_share,0)}</td>
+     <td class="mono ${CLR(s.upside_pct)}">${s.upside_pct==null?'—':PC(s.upside_pct,0)}</td></tr>`).join('')+'</table>';
+}
+function implied(j){
+  const i=j.implied;
+  $('#impliedBox').innerHTML= i?.implied_growth_pct==null
+    ? `<div class="hint">${i?.error||'Not solvable on these inputs.'}</div>`
+    : `<div class="vbig mono" style="font-size:34px">${R(i.implied_growth_pct,1)}%</div>
+       <div class="vsub">revenue CAGR needed over ${j.params.years} years at a ${R(i.wacc_pct,1)}% WACC
+       and ${R(i.terminal_growth_pct,1)}% terminal growth, to justify ₹${R(j.params.price,0)}.</div>`;
+}
+function ddm(d){
+  const el=$('#ddmBox');
+  if(d?.error){ el.innerHTML=`<div class="warn">${d.error}</div>`; return; }
+  el.innerHTML=`<table class="t">
+    <tr><td>Payout (start → target)</td><td class="mono">${R(d.payout_pct,1)}% → ${R(d.target_payout_pct,1)}%</td></tr>
+    <tr><td>Dividend growth</td><td class="mono">${R(d.growth_pct,1)}%</td></tr>
+    <tr><td>Cost of equity</td><td class="mono">${R(d.ke_pct,2)}%</td></tr>
+    <tr><td>PV of stage-1 dividends</td><td class="mono">${R(d.stage1_pv,1)}</td></tr>
+    <tr><td>PV of terminal value</td><td class="mono">${R(d.pv_terminal,1)}</td></tr>
+    <tr class="tot"><td>Value per share</td><td class="mono">₹${R(d.value_per_share,1)}</td></tr></table>
+    <div class="scroll" style="margin-top:14px"><table class="t"><tr><th>Yr</th><th>EPS</th><th>Payout</th><th>DPS</th><th>PV</th></tr>
+    ${d.rows.map(r=>`<tr><td>${r.year}</td><td>${R(r.eps,1)}</td><td>${R(r.payout_pct,1)}%</td>
+      <td>${R(r.dps,1)}</td><td>${R(r.pv,1)}</td></tr>`).join('')}</table></div>`;
+}
+function comps(j){
+  const r=j.relative||{};
+  $('#peerSrc').textContent=j.peer_source||'—';
+  const cols=[['name','Company'],['cmp','CMP'],['mar_cap','Mkt cap'],['pe','P/E'],['ev_ebitda','EV/EBITDA'],
+    ['pb','P/B'],['div_yld','Div %'],['roe','ROE %'],['roce','ROCE %']];
+  $('#peersT').innerHTML=`<tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}</tr>`+
+   (r.peers||[]).map(p=>`<tr>${cols.map(c=>{
+     const v=p[c[0]];
+     return `<td class="${c[0]==='name'?'':'mono'}">${c[0]==='name'?(v||'—'):
+       (c[0]==='mar_cap'?R(v,0):R(v,1))}</td>`;}).join('')}</tr>`).join('')+
+   (r.median?`<tr class="tot"><td>Median</td><td></td><td class="mono">${R(r.median.mar_cap,0)}</td>
+     <td class="mono">${R(r.median.pe,1)}</td><td class="mono">${R(r.median.ev_ebitda,1)}</td>
+     <td class="mono">${R(r.median.pb,2)}</td><td class="mono">${R(r.median.div_yld,1)}</td>
+     <td class="mono">${R(r.median.roe,1)}</td><td class="mono">${R(r.median.roce,1)}</td></tr>`:'');
+
+  const g=r.grouped||{};
+  $('#relImp').innerHTML=Object.keys(g).length
+    ? `<table class="t"><tr><th>Metric</th><th>Low</th><th>Median</th><th>High</th></tr>`+
+      Object.entries(g).map(([k,rows])=>{
+        const m={};rows.forEach(x=>m[x.bucket]=x.per_share);
+        return `<tr><td>${k}</td>${['Low','Median','High'].map(b=>
+          `<td class="mono">${m[b]==null?'—':'₹'+R(m[b],0)}</td>`).join('')}</tr>`;}).join('')+'</table>'
+    : '<div class="hint">No peer multiples available.</div>';
+
+  const o=r.our||{}, m=r.median||{};
+  const cmp=(lbl,a,b,d=1)=>{
+    const rel=(a!=null&&b!=null&&b!==0)?((a/b-1)*100):null;
+    return `<tr><td>${lbl}</td><td class="mono">${R(a,d)}</td><td class="mono">${R(b,d)}</td>
+      <td class="mono ${rel==null?'':(rel>0?'neg':'pos')}">${rel==null?'—':PC(rel,0)}</td></tr>`;
+  };
+  $('#relOur').innerHTML=`<table class="t"><tr><th>Metric</th><th>This co.</th><th>Peer median</th><th>Premium</th></tr>
+    ${cmp('P/E',o.pe,m.pe)}${cmp('EV/EBITDA',o.ev_ebitda,m.ev_ebitda)}
+    ${cmp('P/B',o.pb,m.pb,2)}${cmp('ROE %',o.roe,m.roe)}${cmp('ROCE %',o.roce,m.roce)}
+    ${cmp('Dividend yield %',o.div_yld,m.div_yld)}</table>
+    <div class="hint">A premium is not automatically wrong — growth and returns justify multiples.
+    A premium alongside below-median ROCE is the flag to investigate.</div>`;
+}
+function stmts(c){
+  const T=[['pnl','Profit & Loss'],['bs','Balance Sheet'],['cf','Cash Flow'],['ratios','Ratios']];
+  $('#stmts').innerHTML=T.filter(([k])=>c.tables?.[k]?.rows).map(([k,label])=>{
+    const t=c.tables[k];
+    return `<div class="card" style="margin-bottom:18px"><h2 class="sec">${label}</h2>
+      <p class="note">₹ crore · ${t.columns.length} periods from screener.in</p>
+      <div class="scroll"><table class="t"><tr><th></th>${t.columns.map(x=>`<th>${x}</th>`).join('')}</tr>
+      ${t.rows.map(r=>`<tr><td>${r.label}</td>${r.values.map(v=>
+        `<td class="mono ${v==null?'':(v<0?'neg':'')}">${v==null?'—':R(v,v%1?1:0)}</td>`).join('')}</tr>`).join('')}
+      </table></div></div>`;}).join('');
+}
+function prov(j){
+  const p=j.provenance||{};
+  $('#provT').innerHTML=`<tr><th>Input</th><th>Value</th><th>Source</th><th>Note</th></tr>`+
+   Object.entries(p).map(([k,v])=>`<tr><td>${k.replaceAll('_',' ')}</td>
+     <td class="mono">${v.value==null?'—':R(v.value,2)}</td>
+     <td><span class="badge ${v.source==='computed'||v.source==='assumed'?'auto':''}">${v.source||'—'}</span></td>
+     <td style="color:var(--dim);text-align:left;font-size:12px">${v.note||''}</td></tr>`).join('');
+}
+
+/* ---- peers refresh ---- */
+async function loadPeers(mode){
+  if(!BASE) return;
+  const custom=($('#peersIn')?.value||'').trim();
+  try{
+    const body={ticker:BASE.company?.ticker,mode,use_screener_peers:mode!=='curated'};
+    if(mode==='user') body.custom_peers=custom;
+    const r=await api('/api/peers',body);
+    BASE.peers=r.peers; BASE.peer_source=r.peer_source;
+    const j=await api('/api/recalc',{...readForms(),base:BASE});
+    render(j); showTab('comps');
+  }catch(e){ alert(e.message); }
+}
+
+/* ---- import / export ---- */
+async function upload(f){
+  if(!f) return;
+  loading('Parsing screener.in export…');
+  const fd=new FormData(); fd.append('file',f);
+  try{
+    const r=await fetch('/api/import',{method:'POST',body:fd});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error||'Parse failed');
+    BASE=j; render(j); showTab('dcf');
+  }catch(e){ fail(e.message); }
+}
+async function importPaste(){
+  const t=$('#paste').value;
+  if(!t.trim()) return alert('Paste something first.');
+  loading('Parsing pasted text…');
+  try{
+    const r=await fetch('/api/import',{method:'POST',body:t,headers:{'Content-Type':'text/plain'}});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error||'Parse failed');
+    BASE=j; render(j); showTab('dcf');
+  }catch(e){ fail(e.message); }
+}
+async function manualRun(){
+  const m={}; $$('[data-m]').forEach(el=>{ m[el.dataset.m]=el.value===''?null:el.value; });
+  if(!m.revenue||!m.shares){ alert('Revenue and shares outstanding are required.'); return; }
+  const h={revenue:+m.revenue,ebitda:+m.ebitda,ebit:(+m.ebitda)-(+m.depreciation||0),
+    depreciation:+m.depreciation||0,net_profit:+m.net_profit,eps:+m.eps,debt:+m.debt||0,
+    cash:+m.cash||0,net_worth:+m.net_worth,minority_interest:null,cfo:null,capex_proxy:null,
+    tax_pct:null,years:[],series:{revenue:{},ebitda:{},opm:{},depreciation:{},net_profit:{},eps:{},pbt:{},cfo:{},cfi:{},fcf:{}}};
+  const company={ticker:m.ticker||'',name:m.name||'Manual entry',url:null,sector:{},top:{},
+    history:h,tables:{pnl:null,bs:null,cf:null,ratios:null}};
+  const inputs={price:+m.price||null,market_cap:null,shares:+m.shares,beta:+m.beta||1,
+    pe:null,dividend_yield_pct:null,roce:null,dividend_payout_pct:null,nwc_pct_revenue:null};
+  try{
+    const j=await api('/api/recalc',{...readForms(),base:{company,inputs,provenance:{},peers:[],peer_source:'manual entry'}});
+    BASE=j; render(j); showTab('dcf');
+  }catch(e){ alert(e.message); }
+}
+async function exportXlsx(){
+  if(!BASE) return;
+  const r=await fetch('/api/export',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({company:BASE.company})});
+  if(!r.ok){ const j=await r.json(); return alert(j.error||'Export failed'); }
+  const b=await r.blob(), u=URL.createObjectURL(b), a=document.createElement('a');
+  a.href=u; a.download=(BASE.company.ticker||'company')+'-screener-export.xlsx'; a.click();
+  URL.revokeObjectURL(u);
+}
+
+/* ---- boot ---- */
+document.addEventListener('DOMContentLoaded',()=>{
+  buildForms();
+  $('#ticker').addEventListener('keydown',e=>{ if(e.key==='Enter') analyze(); });
+  const dz=$('#drop');
+  if(dz){ ['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('hot')}));
+    ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('hot')}));
+    dz.addEventListener('drop',e=>upload(e.dataTransfer.files[0])); }
+});
+</script>
+</body>
+</html>

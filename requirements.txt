@@ -1,0 +1,9 @@
+flask>=3.0
+requests>=2.31
+pandas>=2.0
+numpy>=1.26
+openpyxl>=3.1
+html5lib>=1.1
+lxml>=5.0
+yfinance>=0.2.40
+gunicorn>=21.2
